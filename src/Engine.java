@@ -6,35 +6,25 @@
 import java.util.ArrayList;
 
 public class Engine {
-    private int depth;
 
-    public Engine(int depth) {
-        this.depth = depth;
-    }
-
-    public void setDepth(int depth) {
-        this.depth = depth;
-    }
-
-    public int getBestMoveIndex(Board state,int alpha, int beta, boolean player) {
-        int value;
+    public int getBestMoveIndex(Board state, int depth ,int alpha, int beta, boolean player) {
+        int value=0, index=0;
         ArrayList<Integer> movesScore= new ArrayList();
-        
+        char piece= player ? 'x' :'o';
         for (int i : state.getPossibleMoves()) {
                 Board newState = new Board(state.getBoardDeepCopy());
-                depth--;
-                movesScore.add(alpha_beta(newState, alpha, beta, true));
+                newState.fill(i,piece);
+                if(alpha_beta(newState, depth,alpha, beta, player)>value) {value=alpha_beta(newState, depth,alpha, beta, player); index= i;}
+            if(alpha_beta(newState, depth,alpha, beta, player)>=value) System.out.println("Move "+i+" Score " +value);
+                movesScore.add(alpha_beta(newState, depth,alpha, beta, player));
         }
-        return state.getPossibleMoves().get(movesScore.indexOf(maxValueOf(movesScore)));
+        return index;
     }
 
-    public int alpha_beta(Board state,int alpha, int beta, boolean player) {
+    public int alpha_beta(Board state,int depth, int alpha, int beta, boolean player) {
         int value;
-        System.out.println(depth);
         if (depth <= 0 || isTerminalNode(state)) {
-            System.out.println("\n-----------------------ALPHA-BETA--------------------------------");
-            System.out.println(state);
-            System.out.println("-----------------------ALPHA-BETA--------------------------------\n");
+
             return score(state);
         }
         else if (player) {
@@ -42,12 +32,8 @@ public class Engine {
             for (int i : state.getPossibleMoves()) {
                 Board newState = new Board(state.getBoardDeepCopy());
                 newState.fill(i, 'x');
-                System.out.println("\n-----------------------ALPHA-BETA X --------------------------------");
-                System.out.println(depth);
-                System.out.println(newState);
-                System.out.println("-----------------------ALPHA-BETA--------------------------------\n");
-                depth--;
-                value = Math.max(value, alpha_beta(newState,alpha, beta, false));
+
+                value = Math.max(value, alpha_beta(newState,depth-1,alpha, beta, false));
                 alpha = Math.max(alpha, value);
                 if (beta <= alpha) {
                     return value;
@@ -60,13 +46,8 @@ public class Engine {
             for (int i : state.getPossibleMoves()) {
                 Board newState = new Board(state.getBoardDeepCopy());
                 newState.fill(i, 'o');
-                System.out.println("\n-----------------------ALPHA-BETA O --------------------------------");
-                System.out.println(depth);
-                System.out.println(newState);
-                System.out.println("-----------------------ALPHA-BETA--------------------------------\n");
-                depth--;
-                value = Math.min(value, alpha_beta(newState, alpha, beta, true));
-                alpha = Math.min(alpha, value);
+                value = Math.min(value, alpha_beta(newState,depth-1, alpha, beta, true));
+                beta = Math.min(beta, value);
                 if (beta <= alpha) {
                     return value;
 
@@ -74,7 +55,7 @@ public class Engine {
                 return value;
             }
         }
-        return 0;
+        return score(state);
 
     }
 
@@ -84,9 +65,10 @@ public class Engine {
 
     private int score(Board state) {
         if (state.checkWinner('x')) {
-            return 10;
+            System.out.println(state);
+            return 1000;
         } else if (state.checkWinner('o')) {
-            return -10;
+            return -1000;
         } else {
             return scoreOf(state);
         }
@@ -98,6 +80,12 @@ public class Engine {
         }
         return max;
     }
+
+    /**
+     *
+     * @param state
+     * @return
+     */
     public int scoreOf(Board state){
         int value =0, count=0;
         ArrayList<Integer> counts= new ArrayList();
@@ -112,6 +100,8 @@ public class Engine {
             }
         }
         counts.add(count);
+        value=maxValueOf(counts);
+        counts.clear();
         count=0;
         //cols
         for( int c=0; c<state.getBoard()[0].length;c++){
@@ -123,10 +113,7 @@ public class Engine {
                 }
             }
         }
-        //Downward Diag
 
-        //UpWard Diag
-
-        return maxValueOf(counts);
+        return Math.max(value,maxValueOf(counts));
     }
 }
