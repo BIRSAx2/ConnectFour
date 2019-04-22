@@ -8,10 +8,11 @@ public class ConnectFour {
         int possibleMoveIndex;
         Scanner sc= new Scanner(System.in);
         while(!tavolaDaGioco.checkWinner()){
-            possibleMoveIndex=eng.getBestMoveIndex(tavolaDaGioco,4,Integer.MIN_VALUE, Integer.MAX_VALUE,true);
+            possibleMoveIndex=eng.getBestMoveIndex(tavolaDaGioco,1,Integer.MIN_VALUE, Integer.MAX_VALUE,true);
             tavolaDaGioco.fill(possibleMoveIndex,'x');
             System.out.println(tavolaDaGioco);
-            possibleMoveIndex=eng.getBestMoveIndex(tavolaDaGioco,4,Integer.MIN_VALUE, Integer.MAX_VALUE,false);
+            //possibleMoveIndex=eng.getBestMoveIndex(tavolaDaGioco,4,Integer.MIN_VALUE, Integer.MAX_VALUE,false);
+            possibleMoveIndex=sc.nextInt();
             tavolaDaGioco.fill(possibleMoveIndex,'o');
             System.out.println(tavolaDaGioco);
         }

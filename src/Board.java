@@ -69,6 +69,8 @@ public class Board {
     public boolean checkWinner() {
         return checkWinner('x') ||checkWinner('o');
     }
+
+
     public boolean checkHorizontal(char piece) {
         for (int row = 0; row < board.length; row++) {
             for (int col = 0; col < board[0].length - 3; col++) {
