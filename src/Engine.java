@@ -11,16 +11,15 @@ public class Engine {
         int maxValue=-1, index=0, currentValue;
         ArrayList<Integer> movesScore= new ArrayList();
         if (depth <= 0 || isTerminalNode(state)) {
-
             return score(state);
         }
         for (int i : state.getPossibleMoves()) {
              Board newState = new Board(state.getBoardDeepCopy());
              newState.fill(i,'x');
              currentValue=alpha_beta(newState, depth,alpha, beta, player);
-              System.out.println("Move "+i+" Score " +currentValue);
+
              if(currentValue>maxValue) {maxValue=currentValue; index= i;}
-             //if(alpha_beta(newState, depth,alpha, beta, player)>=value) System.out.println("Move "+i+" Score " +value);
+
         }
         return index;
     }
@@ -63,13 +62,12 @@ public class Engine {
 
     private int score(Board state) {
         if (state.checkWinner('x')) {
-            System.out.print(10+" ");
+
             return 10;
         } else if (state.checkWinner('o')) {
-            System.out.print(-10+" ");
             return -10;
         } else {
-            System.out.print(scoreOf(state));
+
             return scoreOf(state);
         }
     }
@@ -112,6 +110,73 @@ public class Engine {
                 else if(count!=0){
                     counts.add(count);
                     count=0;
+                }
+            }
+        }
+        counts.add(count);
+        value = maxValueOf(counts);
+        counts.clear();
+        counts.add(0);
+        count = 0;
+        //DownWard diag
+        for (int row = 0; row < state.getBoard().length - 3; row++) {
+            for (int col = 0; col < state.getBoard()[0].length - 3; col++) {
+                if (state.getBoard()[row][col] == 'x') {
+                    count++;
+                } else if (count != 0) {
+                    counts.add(count);
+                    count = 0;
+                }
+                if (state.getBoard()[row + 1][col + 1] == 'x') {
+                    count++;
+                } else if (count != 0) {
+                    counts.add(count);
+                    count = 0;
+                }
+                if (state.getBoard()[row + 2][col + 2] == 'x') {
+                    count++;
+                } else if (count != 0) {
+                    counts.add(count);
+                    count = 0;
+                }
+                if (state.getBoard()[row + 3][col + 3] == 'x') {
+                    count++;
+                } else if (count != 0) {
+                    counts.add(count);
+                    count = 0;
+                }
+            }
+        }
+        counts.add(count);
+        value = maxValueOf(counts);
+        counts.clear();
+        counts.add(0);
+        count = 0;
+        for (int row = 3; row < state.getBoard().length; row++) {
+            for (int col = 0; col < state.getBoard()[0].length - 3; col++) {
+                if (state.getBoard()[row][col] == 'x') {
+                    count++;
+                } else if (count != 0) {
+                    counts.add(count);
+                    count = 0;
+                }
+                if (state.getBoard()[row - 1][col + 1] == 'x') {
+                    count++;
+                } else if (count != 0) {
+                    counts.add(count);
+                    count = 0;
+                }
+                if (state.getBoard()[row - 2][col + 2] == 'x') {
+                    count++;
+                } else if (count != 0) {
+                    counts.add(count);
+                    count = 0;
+                }
+                if (state.getBoard()[row - 3][col + 3] == 'x') {
+                    count++;
+                } else if (count != 0) {
+                    counts.add(count);
+                    count = 0;
                 }
             }
         }
