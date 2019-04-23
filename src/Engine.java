@@ -1,7 +1,8 @@
 
 /**
- *
- * @author mouhieddine
+ * Connect Four alpha-beta AI engine
+ * @author Mouhieddine Sabir
+ * @version 1.5
  */
 
 public class Engine {
@@ -85,7 +86,7 @@ public class Engine {
      * @param alpha  best value for AI
      * @param beta   best value for opponent
      * @param player actual player, True: AI, False: Opponent
-     * @return
+     * @return score of a move
      */
     public int alpha_beta(Board state, int depth, int alpha, int beta, boolean player) {
         int value;
@@ -97,7 +98,6 @@ public class Engine {
             for (int i : state.getPossibleMoves()) {
                 Board newState = new Board(state.getBoardDeepCopy());
                 newState.fill(i, getAIPiece());
-
                 value = Math.max(value, alpha_beta(newState, depth - 1, alpha, beta, false));
                 alpha = Math.max(alpha, value);
                 if (alpha >= beta) return value;
@@ -124,22 +124,17 @@ public class Engine {
      * @return if it is a terminal state
      */
     private boolean isTerminalNode(Board state) {
-        return (state.isBoardFull() || state.checkWinner());
+        return state.isBoardFull() || state.checkWinner();
     }
 
     /**
      * Returns the AI's score from a given state
-     * @param state
-     * @return
+     * @param state state of the actual game
+     * @return score of AI at the actual game
      */
     private int score(Board state) {
-        if (state.checkWinner(getAIPiece())) {
-
-            return 10;
-        } else if (state.checkWinner(opponentPiece)) {
-            return -10;
-        } else {
-            return state.maxConsecutivePieces(getAIPiece());
-        }
+        if (state.checkWinner(AIPiece)) return 10;
+        if (state.checkWinner(opponentPiece)) return -10;
+        return state.maxConsecutivePieces(AIPiece);
     }
 }

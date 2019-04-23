@@ -1,4 +1,11 @@
 import java.util.Scanner;
+
+/**
+ * Connect Four Game
+ *
+ * @author mouhieddine
+ * @version 1.0
+ */
 public class ConnectFour {
 
     public static void main(String[] args) {
@@ -71,8 +78,10 @@ public class ConnectFour {
                 case 3:
                     System.out.println("Exiting");
                     break;
+                default:
+                    System.out.println("Unexpected value: " + choice);
             } // switch
 
         } // while
-    } //main
-} // class
+    }
+}
