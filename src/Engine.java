@@ -3,52 +3,114 @@
  *
  * @author mouhieddine
  */
-import java.util.ArrayList;
 
 public class Engine {
+    private char AIPiece;
+    private char opponentPiece;
 
-    public int getBestMoveIndex(Board state, int depth ,int alpha, int beta, boolean player) {
-        int maxValue=-1, index=0, currentValue;
-        ArrayList<Integer> movesScore= new ArrayList();
+    /**
+     * Constructor with no param
+     */
+    public Engine() {
+    }
+
+    /**
+     * Constructor that sets the AIPiece
+     *
+     * @param AIPiece 'x' or 'o'
+     */
+    public Engine(char AIPiece) {
+        AIPiece = Character.toLowerCase(AIPiece);
+        if (AIPiece == 'x' || AIPiece == 'o') {
+            this.AIPiece = AIPiece;
+            this.opponentPiece = (AIPiece == 'x') ? 'o' : 'x';
+        }
+    }
+
+    /**
+     * Return AI piece
+     *
+     * @return
+     */
+    public char getAIPiece() {
+        return AIPiece;
+    }
+
+    /**
+     * Sets the AIPiece
+     *
+     * @param AIPiece new AI piece
+     */
+    public void setAIPiece(char AIPiece) {
+        AIPiece = Character.toLowerCase(AIPiece);
+        if (AIPiece == 'x' || AIPiece == 'o') {
+            this.AIPiece = AIPiece;
+            this.opponentPiece = (AIPiece == 'x') ? 'o' : 'x';
+        }
+    }
+
+    /**
+     * Return the best move from a given state
+     *
+     * @param state  actual state of the game
+     * @param depth  depth of search of the best move
+     * @param alpha  best value for AI
+     * @param beta   best value for opponent
+     * @param player actual player, True: AI, False: Opponent
+     * @return
+     */
+    public int getBestMoveIndex(Board state, int depth, int alpha, int beta, boolean player) {
+        int maxScore = -1, index = 0, currentScore;
         if (depth <= 0 || isTerminalNode(state)) {
             return score(state);
         }
         for (int i : state.getPossibleMoves()) {
-             Board newState = new Board(state.getBoardDeepCopy());
-             newState.fill(i,'x');
-             currentValue=alpha_beta(newState, depth,alpha, beta, player);
+            Board newState = new Board(state.getBoardDeepCopy());
+            newState.fill(i, getAIPiece());
+            currentScore = alpha_beta(newState, depth, alpha, beta, player);
 
-             if(currentValue>maxValue) {maxValue=currentValue; index= i;}
-
+            if (currentScore > maxScore) {
+                maxScore = currentScore;
+                index = i;
+            }
         }
         return index;
     }
 
-    public int alpha_beta(Board state,int depth, int alpha, int beta, boolean player) {
+    /**
+     * Return the score of a move from a given state
+     *
+     * @param state  actual state of the game
+     * @param depth  depth of search of the best move
+     * @param alpha  best value for AI
+     * @param beta   best value for opponent
+     * @param player actual player, True: AI, False: Opponent
+     * @return
+     */
+    public int alpha_beta(Board state, int depth, int alpha, int beta, boolean player) {
         int value;
         if (depth <= 0 || isTerminalNode(state)) {
 
             return score(state);
-        }
-        else if (player) {
+        } else if (player) {
             value = Integer.MIN_VALUE;
             for (int i : state.getPossibleMoves()) {
                 Board newState = new Board(state.getBoardDeepCopy());
-                newState.fill(i, 'x');
+                newState.fill(i, getAIPiece());
 
-                value = Math.max(value, alpha_beta(newState,depth-1,alpha, beta, false));
+                value = Math.max(value, alpha_beta(newState, depth - 1, alpha, beta, false));
                 alpha = Math.max(alpha, value);
-                if (alpha>=beta) return value;
+                if (alpha >= beta) return value;
             }
             return value;
         } else {
             value = Integer.MAX_VALUE;
             for (int i : state.getPossibleMoves()) {
                 Board newState = new Board(state.getBoardDeepCopy());
-                newState.fill(i, 'o');
-                value = Math.min(value, alpha_beta(newState,depth-1, alpha, beta, true));
+                newState.fill(i, opponentPiece);
+                value = Math.min(value, alpha_beta(newState, depth - 1, alpha, beta, true));
                 beta = Math.min(beta, value);
-                if (alpha>=beta) return value;
+                if (alpha >= beta) return value;
 
             }
             return value;
@@ -56,131 +118,28 @@ public class Engine {
 
     }
 
+    /**
+     * Checks if a state is a terminal state
+     * @param state
+     * @return if it is a terminal state
+     */
     private boolean isTerminalNode(Board state) {
         return (state.isBoardFull() || state.checkWinner());
     }
 
-    private int score(Board state) {
-        if (state.checkWinner('x')) {
-
-            return 10;
-        } else if (state.checkWinner('o')) {
-            return -10;
-        } else {
-
-            return scoreOf(state);
-        }
-    }
-    private int maxValueOf(ArrayList<Integer> list){
-        int max=list.get(0);
-        for(int i: list){
-            if(i>max) max=i;
-        }
-        return max;
-    }
-
     /**
-     *
+     * Returns the AI's score from a given state
      * @param state
      * @return
      */
-    public int scoreOf(Board state){
-        int value =0, count=0;
-        ArrayList<Integer> counts= new ArrayList();
-        // rows
-        for( int c=0; c< state.getBoard()[0].length;c++){
-            for( char[] row: state.getBoard()){
-                if(row[c]=='x') count++;
-                else if(count!=0){
-                counts.add(count);
-                count=0;
-                }
-            }
-        }
+    private int score(Board state) {
+        if (state.checkWinner(getAIPiece())) {
 
-        counts.add(count);
-        value=maxValueOf(counts);
-        counts.clear();
-        counts.add(0);
-        count=0;
-        //cols
-        for( int c=0; c<state.getBoard()[0].length;c++){
-            for(int r=2; r<state.getBoard().length;r++){
-                if(state.getBoard()[r][c]=='x') count++;
-                else if(count!=0){
-                    counts.add(count);
-                    count=0;
-                }
-            }
+            return 10;
+        } else if (state.checkWinner(opponentPiece)) {
+            return -10;
+        } else {
+            return state.maxConsecutivePieces(getAIPiece());
         }
-        counts.add(count);
-        value = maxValueOf(counts);
-        counts.clear();
-        counts.add(0);
-        count = 0;
-        //DownWard diag
-        for (int row = 0; row < state.getBoard().length - 3; row++) {
-            for (int col = 0; col < state.getBoard()[0].length - 3; col++) {
-                if (state.getBoard()[row][col] == 'x') {
-                    count++;
-                } else if (count != 0) {
-                    counts.add(count);
-                    count = 0;
-                }
-                if (state.getBoard()[row + 1][col + 1] == 'x') {
-                    count++;
-                } else if (count != 0) {
-                    counts.add(count);
-                    count = 0;
-                }
-                if (state.getBoard()[row + 2][col + 2] == 'x') {
-                    count++;
-                } else if (count != 0) {
-                    counts.add(count);
-                    count = 0;
-                }
-                if (state.getBoard()[row + 3][col + 3] == 'x') {
-                    count++;
-                } else if (count != 0) {
-                    counts.add(count);
-                    count = 0;
-                }
-            }
-        }
-        counts.add(count);
-        value = maxValueOf(counts);
-        counts.clear();
-        counts.add(0);
-        count = 0;
-        for (int row = 3; row < state.getBoard().length; row++) {
-            for (int col = 0; col < state.getBoard()[0].length - 3; col++) {
-                if (state.getBoard()[row][col] == 'x') {
-                    count++;
-                } else if (count != 0) {
-                    counts.add(count);
-                    count = 0;
-                }
-                if (state.getBoard()[row - 1][col + 1] == 'x') {
-                    count++;
-                } else if (count != 0) {
-                    counts.add(count);
-                    count = 0;
-                }
-                if (state.getBoard()[row - 2][col + 2] == 'x') {
-                    count++;
-                } else if (count != 0) {
-                    counts.add(count);
-                    count = 0;
-                }
-                if (state.getBoard()[row - 3][col + 3] == 'x') {
-                    count++;
-                } else if (count != 0) {
-                    counts.add(count);
-                    count = 0;
-                }
-            }
-        }
-
-        return Math.max(value,maxValueOf(counts));
     }
 }
