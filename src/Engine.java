@@ -58,7 +58,7 @@ public class Engine {
      * @param alpha  best value for AI
      * @param beta   best value for opponent
      * @param player actual player, True: AI, False: Opponent
-     * @return
+     * @return the best move from a given state
      */
     public int getBestMoveIndex(Board state, int depth, int alpha, int beta, boolean player) {
         int maxScore = -1, index = 0, currentScore;

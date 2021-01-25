@@ -9,8 +9,9 @@ import java.util.Scanner;
 public class ConnectFour {
 
     public static void main(String[] args) {
+        final int SEARCH_DEPTH = 5; // The highest this number is the strongest the engine become.
         Scanner sc= new Scanner(System.in);
-        Engine eng = new Engine('x');
+        Engine connectFourEngine = new Engine('x');
         int choice = 0, move, aiMove;
         Board gameBoard;
         while (choice != 3) {
@@ -18,7 +19,7 @@ public class ConnectFour {
             System.out.println("----------------------\n 1) Player vs Player\n 2) Player vs AI\n 3) exit\n----------------------");
             while (choice != 1 && choice != 2 && choice != 3) if (sc.hasNextInt()) choice = sc.nextInt();
             switch (choice) {
-                case 1:
+                case 1 -> {
                     choice = 0;
                     gameBoard = new Board();
                     System.out.println("Player x\n vs \nPlayer o");
@@ -47,8 +48,8 @@ public class ConnectFour {
                     } else {
                         System.out.println("Draw");
                     }
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     choice = 0;
                     gameBoard = new Board();
                     System.out.println("AI x\n vs \nPlayer o");
@@ -63,7 +64,11 @@ public class ConnectFour {
 
                         System.out.println("Possible moves: " + gameBoard.getPossibleMoves());
                         System.out.print("AI move: ");
-                        aiMove = eng.getBestMoveIndex(gameBoard, 4, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
+                        aiMove = connectFourEngine.getBestMoveIndex(gameBoard,
+                                SEARCH_DEPTH,
+                                Integer.MIN_VALUE,
+                                Integer.MAX_VALUE,
+                                false);
                         System.out.println(aiMove);
                         gameBoard.fill(aiMove, 'x');
                         System.out.println(gameBoard);
@@ -74,12 +79,9 @@ public class ConnectFour {
                     } else {
                         System.out.println("Draw");
                     }
-                    break;
-                case 3:
-                    System.out.println("Exiting");
-                    break;
-                default:
-                    System.out.println("Unexpected value: " + choice);
+                }
+                case 3 -> System.out.println("Exiting");
+                default -> System.out.println("Unexpected value: " + choice);
             } // switch
 
         } // while
