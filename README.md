@@ -12,3 +12,4 @@ The algorithm that drives the computer decisions is the min/max algorithm.
 ![screenshots/gameEnd.png](screenshots/gameEnd.png)
 
 # How to run
+Compile all classes and run the ConnectFour class
